@@ -1,19 +1,8 @@
+import streamlit as st
 import os
 import pandas as pd
-import streamlit as st
-# scada/app_cloud.py
-import sys, subprocess
+import pymysql as mysql  # << SOLO esto, nada de ensure ni pip en runtime
 
-def ensure(pkg):
-    try:
-        __import__(pkg)
-    except ImportError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "PyMySQL==1.1.1"])
-        __import__(pkg)
-
-ensure("pymysql")
-
-import pymysql as mysql
 
 
 
@@ -140,4 +129,5 @@ with right:
         st.dataframe(ev, use_container_width=True, hide_index=True)
     else:
         st.write("Sin eventos.")
+
 
