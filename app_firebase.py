@@ -80,7 +80,7 @@ with left:
 
 with right:
     st.header("Estado")
-    df = get_latest_telemetry_firestore(client, limit=200)
+    df = get_latest_telemetry(client, limit=200)
 
     if df.empty:
         st.info("Sin telemetría aún.")
@@ -112,6 +112,7 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
 
 
 
