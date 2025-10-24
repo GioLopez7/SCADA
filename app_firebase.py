@@ -52,7 +52,7 @@ with left:
 
     if st.button("✅ Enviar referencia"):
         insert_command_firestore(client, sp_ref_cm=float(sp))
-        insert_event(client, "SETPOINT_CHANGE", f"sp_ref_cm={sp}")
+        insert_event_firestore(client, "SETPOINT_CHANGE", f"sp_ref_cm={sp}")
         st.success(f"Referencia enviada: {sp} cm")
 
     st.markdown("---")
@@ -112,6 +112,7 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
 
 
 
