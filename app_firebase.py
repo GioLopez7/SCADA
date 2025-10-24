@@ -6,7 +6,7 @@ import pandas as pd
 
 # al principio del archivo scada_cloud/app_cloud.py
 from firestore_db import (
-    get_firestore_client_firestore,
+    get_firestore_client,
     insert_command_firestore,
     insert_event_firestore,
     insert_telemetry_firestore,
@@ -105,6 +105,7 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
 
 
 
