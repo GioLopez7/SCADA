@@ -4,3 +4,4 @@ pandas==2.2.2
 python-dotenv==1.0.1
 google-cloud-firestore==2.11.0
 google-auth==2.24.0
+firebase-admin==6.5.0
