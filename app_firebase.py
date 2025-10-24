@@ -51,8 +51,8 @@ with left:
             sp = st.session_state.sp_slider
 
     if st.button("✅ Enviar referencia"):
-        insert_command(client, sp_ref_cm=float(sp))
-        insert_event(client, "SETPOINT_CHANGE", f"sp_ref_cm={sp}")
+        insert_command_firestore(client, sp_ref_cm=float(sp))
+        insert_event_firestore(client, "SETPOINT_CHANGE", f"sp_ref_cm={sp}")
         st.success(f"Referencia enviada: {sp} cm")
 
     st.markdown("---")
@@ -60,18 +60,18 @@ with left:
     c1, c2, c3 = st.columns(3)
     with c1:
         if st.button("▶️ Inicio"):
-            insert_command(client, cmd_start=1)
-            insert_event(client, "CMD", "START")
+            insert_command_firestore(client, cmd_start=1)
+            insert_event_firestore(client, "CMD", "START")
             st.success("Inicio enviado")
     with c2:
         if st.button("⏹ Detener"):
-            insert_command(client, cmd_stop=1)
-            insert_event(client, "CMD", "STOP")
+            insert_command_firestore(client, cmd_stop=1)
+            insert_event_firestore(client, "CMD", "STOP")
             st.warning("Stop enviado")
     with c3:
         if st.button("🛑 Parada de emergencia"):
-            insert_command(client, cmd_estop=1)
-            insert_event(client, "CMD", "ESTOP")
+            insert_command_firestore(client, cmd_estop=1)
+            insert_event_firestore(client, "CMD", "ESTOP")
             st.error("E-STOP enviado")
 
     st.markdown("---")
@@ -80,7 +80,7 @@ with left:
 
 with right:
     st.header("Estado")
-    df = get_latest_telemetry(client, limit=200)
+    df = get_latest_telemetry_firestore(client, limit=200)
 
     if df.empty:
         st.info("Sin telemetría aún.")
@@ -104,7 +104,7 @@ with right:
 
     st.markdown("---")
     st.header("Eventos recientes")
-    ev = get_recent_events(client, 50)
+    ev = get_recent_events_firestore(client, 50)
     if ev.empty:
         st.write("Sin eventos.")
     else:
@@ -112,6 +112,7 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
 
 
 
