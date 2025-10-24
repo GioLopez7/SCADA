@@ -5,7 +5,50 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime
 import json
+# Nombre del secreto que guardaste en Streamlit (ajusta si usaste otro)
+SECRET_KEY_NAME = "firebase_key"   # <- si tu secreto se llama firebase_key, pon ese nombre
 
+# Verifica que exista el secreto
+raw = st.secrets.get(SECRET_KEY_NAME)
+if not raw:
+    st.error(f"Error al inicializar Firebase: st.secrets has no key '{SECRET_KEY_NAME}'. Añádelo en Manage app → Settings → Secrets.")
+    st.stop()
+
+# raw puede ser 1) un dict ya parseado, 2) un string JSON (multilínea)
+if isinstance(raw, dict):
+    info = raw
+else:
+    # si es string, intentamos convertirlo a dict
+    try:
+        info = json.loads(raw)
+    except Exception as e:
+        st.error("Error al parsear el secreto de Firebase. Asegúrate de pegar el JSON EXACTO en Secrets (no variables extra).")
+        st.write("Detalle técnico del parse error:", str(e))
+        st.stop()
+
+# Reparar private_key con saltos de línea si viene escapada (caso común)
+pk = info.get("private_key")
+if pk and "\\n" in pk:
+    info["private_key"] = pk.replace("\\n", "\n")
+
+# Comprobaciones básicas
+if "project_id" not in info or "private_key" not in info or "client_email" not in info:
+    st.error("El JSON de Firebase parece incompleto. Asegúrate de pegar el JSON completo de la cuenta de servicio.")
+    st.stop()
+
+# Inicializar Firebase (si no está inicializado aún)
+try:
+    # Evitar re-inicializar si ya existe app
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(info)
+        firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    # opcional: mostrar un pequeño aviso (comentarlo en producción)
+    st.write("✅ Firebase inicializado correctamente.")
+except Exception as e:
+    st.error("Error al inicializar Firebase (ver logs).")
+    st.write("Detalle:", str(e))
+    st.stop()
 # ----------------- Configuración Firebase -----------------
 # Inicializar Firebase solo una vez
 if not firebase_admin._apps:
@@ -313,5 +356,6 @@ with right:
 # Footer con información de auto-refresco
 st.divider()
 st.caption("💡 Presiona 'Actualizar datos' para ver los cambios más recientes desde TIA Portal")
+
 
 
