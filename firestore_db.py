@@ -6,29 +6,49 @@ from google.cloud import firestore
 from google.oauth2 import service_account
 from datetime import datetime
 
-def get_firestore_client():
+def get_firestore_client(secret_name="firebase", env_name="FIREBASE_KEY_PATH"):
     """
-    Obtiene cliente Firestore.
-    - En Streamlit Cloud lee st.secrets["FIREBASE_KEY"] (JSON string).
-    - En local lee la variable de entorno FIREBASE_KEY_PATH (ruta al JSON).
+    Devuelve cliente Firestore:
+    - primero intenta st.secrets[secret_name] (para Streamlit Cloud)
+    - si no existe, intenta la ruta local en env FIREBASE_KEY_PATH (para ejecución local)
     """
-    # 1) Streamlit Cloud secrets
-    if "FIREBASE_KEY" in st.secrets:
-        key_json = st.secrets["FIREBASE_KEY"]
-        info = json.loads(key_json)
-        creds = service_account.Credentials.from_service_account_info(info)
-        client = firestore.Client(credentials=creds, project=info["project_id"])
-        return client
+    import streamlit as st
+    try:
+        # intentar cargar desde streamlit secrets
+        raw = st.secrets.get(secret_name)
+        if raw:
+            if isinstance(raw, dict):
+                info = raw
+            else:
+                import json
+                info = json.loads(raw)
+            if "private_key" in info and "\\n" in info["private_key"]:
+                info["private_key"] = info["private_key"].replace("\\n", "\n")
+            import firebase_admin
+            from firebase_admin import credentials, firestore
+            if not firebase_admin._apps:
+                cred = credentials.Certificate(info)
+                firebase_admin.initialize_app(cred)
+            return firestore.client()
+    except Exception as ex:
+        # si falla, seguimos al fallback local
+        pass
 
-    # 2) Local: ruta al JSON
-    key_path = os.getenv("FIREBASE_KEY_PATH")
-    if key_path and os.path.exists(key_path):
-        info = json.load(open(key_path, "r", encoding="utf-8"))
-        creds = service_account.Credentials.from_service_account_info(info)
-        client = firestore.Client(credentials=creds, project=info["project_id"])
-        return client
+    # fallback local desde ruta en variable de entorno
+    path = os.getenv(env_name)
+    if path and os.path.exists(path):
+        import json
+        info = json.load(open(path, "r", encoding="utf-8"))
+        if "private_key" in info and "\\n" in info["private_key"]:
+            info["private_key"] = info["private_key"].replace("\\n", "\n")
+        import firebase_admin
+        from firebase_admin import credentials, firestore
+        if not firebase_admin._apps:
+            cred = credentials.Certificate(info)
+            firebase_admin.initialize_app(cred)
+        return firestore.client()
 
-    raise RuntimeError("No se encontró la credencial de Firebase. Pon FIREBASE_KEY en Streamlit secrets o FIREBASE_KEY_PATH en env.")
+    raise RuntimeError("No se pudo inicializar Firestore: añade st.secrets['%s'] o define env %s" % (secret_name, env_name))
 
 # --- Inserts ---
 def insert_command_firestore(client, cmd_start=0, cmd_stop=0, cmd_estop=0, sp_ref_cm=None):
@@ -96,3 +116,4 @@ def get_recent_events_firestore(client, limit=50):
         return pd.DataFrame()
     df = pd.DataFrame(rows).sort_values("ts", ascending=False)
     return df
+
