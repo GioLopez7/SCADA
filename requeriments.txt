@@ -2,3 +2,5 @@ streamlit==1.50.0
 mysql-connector-python==8.0.33
 pandas==2.2.2
 python-dotenv==1.0.1
+google-cloud-firestore==2.11.0
+google-auth==2.24.0
