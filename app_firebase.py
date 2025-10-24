@@ -26,7 +26,7 @@ if not firebase_admin._apps:
             "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
             "client_x509_cert_url": os.getenv("FIREBASE_CERT_URL") or st.secrets["firebase"]["client_x509_cert_url"]
         }
-        cred = credentials.Certificate("scada-3bc42-firebase-adminsdk-fbsvc-b565ca31cb.json")
+        cred = credentials.Certificate("serviceAccountKey.json")
         
         # URL de tu Realtime Database
         database_url = os.getenv("FIREBASE_DATABASE_URL") or st.secrets["firebase"]["database_url"]
@@ -313,4 +313,5 @@ with right:
 # Footer con información de auto-refresco
 st.divider()
 st.caption("💡 Presiona 'Actualizar datos' para ver los cambios más recientes desde TIA Portal")
+
 
