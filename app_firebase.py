@@ -4,7 +4,15 @@ import time
 from datetime import datetime
 import pandas as pd
 
-from firestore_db import get_firestore_client, insert_command, insert_event, get_latest_telemetry, get_recent_events
+# al principio del archivo scada_cloud/app_cloud.py
+from scada_cloud.firestore_db import (
+    get_firestore_client,
+    insert_command,
+    insert_event,
+    insert_telemetry,
+    get_latest_telemetry,
+    get_recent_events
+)
 
 st.set_page_config(page_title="Supervisión en la Nube", layout="wide")
 st.title("☁️ Supervisión en la Nube - Laboratorio de Automatización")
@@ -97,3 +105,4 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
