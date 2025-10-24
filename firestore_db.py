@@ -79,7 +79,7 @@ def insert_telemetry_firestore(client, level_cm, vfd_rpm, vfd_speedcmd, blink_2h
     client.collection("telemetry_samples").add(doc)
 
 # --- Reads ---
-def get_latest_telemetry_firestore(client, limit=200):
+def get_latest_telemetry(client, limit=200):
     q = client.collection("telemetry_samples").order_by("ts", direction=firestore.Query.DESCENDING).limit(limit)
     docs = q.stream()
     rows = []
@@ -116,4 +116,5 @@ def get_recent_events_firestore(client, limit=50):
         return pd.DataFrame()
     df = pd.DataFrame(rows).sort_values("ts", ascending=False)
     return df
+
 
