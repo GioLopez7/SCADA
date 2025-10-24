@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import streamlit as st
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, firestore
 from datetime import datetime
 import json
 
@@ -313,3 +313,4 @@ with right:
 # Footer con información de auto-refresco
 st.divider()
 st.caption("💡 Presiona 'Actualizar datos' para ver los cambios más recientes desde TIA Portal")
+
