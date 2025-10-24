@@ -1,8 +1,7 @@
-# scada_cloud/app_cloud.py
+# --- pega esto al inicio de scada_cloud/app_cloud.py (reemplaza imports previos) ---
 import streamlit as st
-import time
-from datetime import datetime
 import pandas as pd
+from datetime import datetime
 
 # al principio del archivo scada_cloud/app_cloud.py
 from firestore_db import (
@@ -13,6 +12,14 @@ from firestore_db import (
     get_latest_telemetry_firestore,
     get_recent_events_firestore
 )
+# Inicializar Firestore (sin argumentos)
+try:
+    client = get_firestore_client()   # llamar SIN keyword args
+except Exception as e:
+    st.error("Error al inicializar Firebase: " + str(e))
+    st.stop()
+
+# --- resto de tu app sigue igual ---
 
 st.set_page_config(page_title="Supervisión en la Nube", layout="wide")
 st.title("☁️ Supervisión en la Nube - Laboratorio de Automatización")
@@ -105,6 +112,7 @@ with right:
 
 st.markdown("---")
 st.caption("Nota: la intermitencia 2Hz y el registro continuo de RPM/velocidades lo publica el gateway PLC. Esta app lee y muestra los datos.")
+
 
 
 
